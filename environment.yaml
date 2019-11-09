@@ -1,0 +1,30 @@
+name: meal
+channels:
+- menpo
+- conda-forge
+- defaults
+dependencies:
+- python=3.6
+- numpy
+- scipy
+- pillow
+- nltk
+- keras
+- scikit-learn
+- seaborn
+- bokeh
+- pip:
+  - tqdm
+  - fasttext
+  - coverage
+  - coveralls
+  - codecov
+  - pytest
+  - flask
+  - flask-socketio
+  - Fabric
+  - Flask-SQLAlchemy
+  - Flask-WTF
+  - WTForms
+  - setuptools==28.6.1
+  - beautifulsoup4==4.5.3

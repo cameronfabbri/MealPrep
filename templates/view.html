@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+{% for recipe in recipe_list %}
+    {{ recipe['title'] }}
+    <hr>
+{% endfor %}
+
+{% endblock %}

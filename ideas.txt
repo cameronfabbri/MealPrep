@@ -1,0 +1,6 @@
+Group weekly meals together based on ingredients, such that
+the same ingredients can carry over from one meal to another
+
+Active learning for displaying suggested weekly meals
+
+Option to put my own recipe in

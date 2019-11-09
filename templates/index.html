@@ -1,0 +1,61 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+    <h2>{{ app_data['html_title'] }}</h2>
+
+    <style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .column{
+        float: left;
+        width: 33.33%;
+        padding: 10px;
+        height: 300px;
+    }
+
+    .row:after{
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    </style>
+
+    <div class="page-header"></div>
+    <br>
+
+    <div class="row">
+        <div class="column" style="background-color:#aaa;">
+            <h2> <center> Meal 1 </center> </h2><br>
+            <p>
+                <b> Title: </b><br>
+                <b> Ingredients: </b><br><br>
+                <b> Step 1: </b><br>
+                <b> Step 2: </b>
+            </p>
+        </div>
+        <div class="column" style="background-color:#aaa;">
+            <h2> <center> Meal 2 </center> </h2><br>
+            <p>
+                <b> Title: </b><br>
+                <b> Ingredients: </b><br><br>
+                <b> Step 1: </b><br>
+                <b> Step 2: </b>
+            </p>
+        </div>
+        <div class="column" style="background-color:#aaa;">
+            <h2> <center> Meal 3 </center> </h2><br>
+            <p>
+                <b> Title: </b><br>
+                <b> Ingredients: </b><br><br>
+                <b> Step 1: </b><br>
+                <b> Step 2: </b>
+            </p>
+        </div>
+    </div>
+   
+{% endblock %}
