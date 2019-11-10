@@ -26,6 +26,9 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+d = datetime.date.today()
+_, week_num, _ = d.isocalendar()
+
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -46,13 +49,13 @@ def index():
         # Update Week with new recipe
         old_recipe.title = new_recipe.title
         old_recipe.rid = new_recipe.rid
+        old_recipe.url = new_recipe.url
         old_recipe.ingredients = new_recipe.ingredients
         old_recipe.instructions = new_recipe.instructions
 
         return redirect(url_for('index'))
 
     else:
-        d = datetime.datetime.now()
 
         # Get all recipes in current week table
         week_recipes_ = session.query(Week).all()
@@ -71,6 +74,7 @@ def index():
 
                 recipe = {}
                 recipe['title'] = recipe_.title
+                recipe['url'] = recipe_.url
                 recipe['ingredients'] = ast.literal_eval(recipe_.ingredients)
                 recipe['instructions'] = ast.literal_eval(recipe_.instructions)
 
@@ -81,13 +85,17 @@ def index():
                     title=recipe_.title,
                     ingredients=recipe_.ingredients,
                     instructions=recipe_.instructions,
-                    start_date=d)
+                    week_num=week_num,
+                    url=recipe_.url)
+
                 session.add(w_r)
                 session.commit()
+
         else:
             for recipe_ in week_recipes_:
                 recipe = {}
                 recipe['title'] = recipe_.title
+                recipe['url'] = recipe_.url
                 recipe['ingredients'] = ast.literal_eval(recipe_.ingredients)
                 recipe['instructions'] = ast.literal_eval(recipe_.instructions)
                 week_recipes.append(recipe)

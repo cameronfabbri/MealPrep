@@ -23,14 +23,30 @@ if __name__ == '__main__':
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
 
-    recipes_file = os.path.join('data','layers','small.json')
-    #recipes_file = os.path.join('data','layers','layer1.json')
+    #recipes_file = os.path.join('data','layers','recipes_small.json')
+    #images_file  = os.path.join('data','layers','images_small.json')
+
+    recipes_file = os.path.join('data','layers','layer1.json')
+    images_file  = os.path.join('data','layers','layer2.json')
 
     with open(recipes_file, 'r') as json_file:
         recipes = json.load(json_file)
 
-    i = 0
+    with open(images_file, 'r') as json_file:
+        images = json.load(json_file)
 
+    recipe_url_dict = {}
+
+    for line in images:
+        recipe_id = line['id']
+        images = line['images']
+
+        urls = [x['url'] for x in images]
+        filenames = [x['id'] for x in images]
+
+        recipe_url_dict[str(recipe_id)] = urls[0]
+
+    i = 0
     for recipe in tqdm(recipes):
 
         # Get data
@@ -45,15 +61,17 @@ if __name__ == '__main__':
         instructions = ast.literal_eval(instructions)
         instructions = str([x['text'] for x in instructions])
 
+        if recipe_url_dict.get(rid) is None: continue
+
         recipe = Recipe(
             rid=rid,
             title=title,
             ingredients=ingredients,
-            instructions=instructions)
+            instructions=instructions,
+            url=recipe_url_dict.get(rid))
 
         session.add(recipe)
         session.commit()
 
-        i += 1
-
-        if i > 1000: exit()
+        #i += 1
+        #if i > 100: exit()

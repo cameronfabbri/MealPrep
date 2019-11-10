@@ -18,6 +18,7 @@ class Recipe(Base):
     ingredients = Column(String(256), nullable=False)
     instructions = Column(String(256), nullable=False)
     date_made = Column(Date, nullable=True)
+    url = Column(String(512), nullable=True)
 
 
 class Week(Base):
@@ -30,8 +31,9 @@ class Week(Base):
     title = Column(String(256), nullable=False)
     ingredients = Column(String(256), nullable=False)
     instructions = Column(String(256), nullable=False)
-    start_date = Column(Date, nullable=False)
+    week_num = Column(Integer, nullable=False)
     rating = Column(Integer, nullable=True)
+    url = Column(String(512), nullable=True)
 
 
 class Favorite(Base):
@@ -46,6 +48,7 @@ class Favorite(Base):
     instructions = Column(String(256), nullable=False)
     start_date = Column(Date, nullable=False)
     rating = Column(Integer, nullable=True)
+    url = Column(String(512), nullable=True)
 
 
 engine = create_engine('sqlite:///recipes.db')
