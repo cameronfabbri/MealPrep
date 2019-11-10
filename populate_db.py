@@ -12,7 +12,9 @@ from sqlalchemy.orm import sessionmaker
 from db_setup import Base, Recipe
 from tqdm import tqdm
 import json
+import ast
 import os
+
 
 if __name__ == '__main__':
 
@@ -21,8 +23,8 @@ if __name__ == '__main__':
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
 
-    #recipes_file = os.path.join('data','layers','small.json')
-    recipes_file = os.path.join('data','layers','layer1.json')
+    recipes_file = os.path.join('data','layers','small.json')
+    #recipes_file = os.path.join('data','layers','layer1.json')
 
     with open(recipes_file, 'r') as json_file:
         recipes = json.load(json_file)
@@ -32,11 +34,19 @@ if __name__ == '__main__':
     for recipe in tqdm(recipes):
 
         # Get data
+        rid          = str(recipe['id'])
         title        = str(recipe['title'])
         ingredients  = str(recipe['ingredients'])
         instructions = str(recipe['instructions'])
 
+        ingredients = ast.literal_eval(ingredients)
+        ingredients = str([x['text'] for x in ingredients])
+
+        instructions = ast.literal_eval(instructions)
+        instructions = str([x['text'] for x in instructions])
+
         recipe = Recipe(
+            rid=rid,
             title=title,
             ingredients=ingredients,
             instructions=instructions)
@@ -46,4 +56,4 @@ if __name__ == '__main__':
 
         i += 1
 
-        if i > 10: break
+        if i > 1000: exit()

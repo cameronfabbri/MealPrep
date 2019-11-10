@@ -4,12 +4,12 @@ app = Flask(__name__)
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_setup import Base, Recipe
+from db_setup import Base, Recipe, Week
 
+import numpy as np
+import datetime
 import random
 import ast
-import numpy as np
-
 
 app_data = {
     "name":         "Meal Prep Web App",
@@ -27,23 +27,73 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-@app.route('/')
+@app.route('/', methods=['GET','POST'])
 def index():
-    num = session.query(Recipe).count()
-    rand_ids = [random.randint(1, num) for i in range(3)]
-    recipes = []
-    for r_id in rand_ids:
-        recipe = session.query(Recipe).get(r_id)
 
-        v_ingredients = ast.literal_eval(recipe.ingredients)
+    if request.method == 'POST':
+        print('Generating new recipe for meal',request.form['meal'])
 
-        ingredients = []
-        for ingredient in v_ingredients:
-            ingredients.append(ingredient['text'])
+        # Get old recipe from Week table
+        old_rid = int(request.form['meal'])
+        old_recipe = session.query(Week).get(old_rid)
+
+        # Get new random recipe
+        num = session.query(Recipe).count()
+        new_rid = random.randint(1, num)
+
+        new_recipe = session.query(Recipe).get(new_rid)
+
+        # Update Week with new recipe
+        old_recipe.title = new_recipe.title
+        old_recipe.rid = new_recipe.rid
+        old_recipe.ingredients = new_recipe.ingredients
+        old_recipe.instructions = new_recipe.instructions
+
+        return redirect(url_for('index'))
+
+    else:
+        d = datetime.datetime.now()
+
+        # Get all recipes in current week table
+        week_recipes_ = session.query(Week).all()
+            
+        week_recipes = []
+
+        # No recipes in current week, so add three random ones
+        if week_recipes_ == []:
+
+            num = session.query(Recipe).count()
+            rand_ids = [random.randint(1, num) for i in range(3)]
+
+            for r_id in rand_ids:
+
+                recipe_ = session.query(Recipe).get(r_id)
+
+                recipe = {}
+                recipe['title'] = recipe_.title
+                recipe['ingredients'] = ast.literal_eval(recipe_.ingredients)
+                recipe['instructions'] = ast.literal_eval(recipe_.instructions)
+
+                week_recipes.append(recipe)
+
+                # Add to weekly recipe table
+                w_r = Week(
+                    title=recipe_.title,
+                    ingredients=recipe_.ingredients,
+                    instructions=recipe_.instructions,
+                    start_date=d)
+                session.add(w_r)
+                session.commit()
+        else:
+            for recipe_ in week_recipes_:
+                recipe = {}
+                recipe['title'] = recipe_.title
+                recipe['ingredients'] = ast.literal_eval(recipe_.ingredients)
+                recipe['instructions'] = ast.literal_eval(recipe_.instructions)
+                week_recipes.append(recipe)
 
 
-
-    return render_template('index.html', app_data=app_data, recipes=recipes)
+    return render_template('index.html', app_data=app_data, recipes=week_recipes)
 
 
 @app.route('/add', methods=['GET','POST'])
@@ -54,7 +104,7 @@ def add():
         rf = request.form
 
         new_recipe = Recipe(
-            title=rf['title'],
+            title=['title'],
             ingredients=rf['ingredients'],
             instructions=rf['instructions'])
 

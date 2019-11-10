@@ -13,10 +13,12 @@ class Recipe(Base):
     __tablename__ = 'recipes'
 
     id = Column(Integer, primary_key=True)
+    rid = Column(String(256), primary_key=False)
     title = Column(String(256), nullable=False)
     ingredients = Column(String(256), nullable=False)
     instructions = Column(String(256), nullable=False)
     date_made = Column(Date, nullable=True)
+
 
 class Week(Base):
     """ Table for recipes for the current week """
@@ -24,6 +26,21 @@ class Week(Base):
     __tablename__ = 'week'
 
     id = Column(Integer, primary_key=True)
+    rid = Column(String(256), primary_key=False)
+    title = Column(String(256), nullable=False)
+    ingredients = Column(String(256), nullable=False)
+    instructions = Column(String(256), nullable=False)
+    start_date = Column(Date, nullable=False)
+    rating = Column(Integer, nullable=True)
+
+
+class Favorite(Base):
+    """ Table for recipes for the current week """
+
+    __tablename__ = 'favorite'
+
+    id = Column(Integer, primary_key=True)
+    rid = Column(String(256), primary_key=False)
     title = Column(String(256), nullable=False)
     ingredients = Column(String(256), nullable=False)
     instructions = Column(String(256), nullable=False)
