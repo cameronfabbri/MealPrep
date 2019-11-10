@@ -2,12 +2,14 @@ from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db_setup import Base, Recipe
 
+import random
 import ast
+import numpy as np
+
 
 app_data = {
     "name":         "Meal Prep Web App",
@@ -18,7 +20,6 @@ app_data = {
     "keywords":     "meal, mealprep, prep, dinner"
 }
 
-
 # Connect to the database
 engine = create_engine('sqlite:///recipes.db')
 Base.metadata.bind = engine
@@ -28,7 +29,21 @@ session = DBSession()
 
 @app.route('/')
 def index():
-    return render_template('index.html', app_data=app_data)
+    num = session.query(Recipe).count()
+    rand_ids = [random.randint(1, num) for i in range(3)]
+    recipes = []
+    for r_id in rand_ids:
+        recipe = session.query(Recipe).get(r_id)
+
+        v_ingredients = ast.literal_eval(recipe.ingredients)
+
+        ingredients = []
+        for ingredient in v_ingredients:
+            ingredients.append(ingredient['text'])
+
+
+
+    return render_template('index.html', app_data=app_data, recipes=recipes)
 
 
 @app.route('/add', methods=['GET','POST'])
@@ -74,6 +89,7 @@ def view():
     print(recipe_list)
 
     return render_template('view.html', app_data=app_data, recipe_list=recipe_list)
+
 
 @app.route('/b3')
 def b3():
