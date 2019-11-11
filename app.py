@@ -4,6 +4,7 @@ app = Flask(__name__)
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import scoped_session
 from db_setup import Base, Recipe, Week
 
 import numpy as np
@@ -20,21 +21,23 @@ app_data = {
     "keywords":     "meal, mealprep, prep, dinner"
 }
 
-# Connect to the database
-engine = create_engine('sqlite:///recipes.db')
-Base.metadata.bind = engine
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
 
 d = datetime.date.today()
 _, week_num, _ = d.isocalendar()
 
 
+#engine = create_engine('sqlite:///recipes.db')
+from db_setup import engine
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+#session_factory = sessionmaker(bind=engine)
+#session = scoped_session(session_factory)
+
 @app.route('/', methods=['GET','POST'])
 def index():
 
     if request.method == 'POST':
-        print('Generating new recipe for meal',request.form['meal'])
 
         # Get old recipe from Week table
         old_rid = int(request.form['meal'])
@@ -52,6 +55,9 @@ def index():
         old_recipe.url = new_recipe.url
         old_recipe.ingredients = new_recipe.ingredients
         old_recipe.instructions = new_recipe.instructions
+
+        session.add(old_recipe)
+        session.commit()
 
         return redirect(url_for('index'))
 

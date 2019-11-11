@@ -6,7 +6,6 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
-
 class Recipe(Base):
     """ Table for all recipes """
 
@@ -50,9 +49,7 @@ class Favorite(Base):
     rating = Column(Integer, nullable=True)
     url = Column(String(512), nullable=True)
 
-
 engine = create_engine('sqlite:///recipes.db')
-
 
 # Create classes above in database
 Base.metadata.create_all(engine)

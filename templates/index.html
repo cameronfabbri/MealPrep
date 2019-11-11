@@ -14,7 +14,7 @@
         float: left;
         width: 33.33%;
         padding: 10px;
-        height: 800px;
+        height: 1600px;
     }
     
     .column2{
@@ -61,8 +61,11 @@
             <p>
                 <b> Title: {{ recipes[0]['title'] }} </b><br><br>
                 <b> Ingredients: {% for ing in recipes[0]['ingredients'] %} </b><br>
-                {{ ing }}
-                {% endfor %}
+                    {{ ing }}
+                {% endfor %}<br><br>
+                <b> Instructions: {% for inst in recipes[0]['instructions'] %} </b><br>
+                    {{ inst }}
+                {% endfor %}<br>
             </p>
         </div>
         <div class="column" style="background-color:#aaa;">
@@ -73,8 +76,11 @@
             <p>
                 <b> Title: {{ recipes[1]['title'] }} </b><br><br>
                 <b> Ingredients: {% for ing in recipes[1]['ingredients'] %} </b><br>
-                {{ ing }}
-                {% endfor %}
+                    {{ ing }}
+                {% endfor %}<br><br>
+                <b> Instructions: {% for inst in recipes[1]['instructions'] %} </b><br>
+                    {{ inst }}
+                {% endfor %}<br>
             </p>
         </div>
         <div class="column" style="background-color:#aaa;">
@@ -85,8 +91,11 @@
             <p>
                 <b> Title: {{ recipes[2]['title'] }} </b><br><br>
                 <b> Ingredients: {% for ing in recipes[2]['ingredients'] %} </b><br>
-                {{ ing }}
-                {% endfor %}
+                    {{ ing }}
+                {% endfor %}<br><br>
+                <b> Instructions: {% for inst in recipes[2]['instructions'] %} </b><br>
+                    {{ inst }}
+                {% endfor %}<br>
             </p>
         </div>
     </div>
