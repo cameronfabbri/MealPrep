@@ -3,4 +3,8 @@ the same ingredients can carry over from one meal to another
 
 Active learning for displaying suggested weekly meals
 
-Option to put my own recipe in
+Options:
+    - put my own recipe in
+    - get a new picture from google_images_download
+    - upload my own picture
+    - Recipe page for each one I can add notes to, favorite, etc
