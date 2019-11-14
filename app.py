@@ -2,10 +2,11 @@ from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
+from google_images_download import google_images_download
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import scoped_session
-from db_setup import Base, Recipe, Week
+from db_setup import Base, Recipe, Week, Favorite, MyRecipes
 
 import numpy as np
 import datetime
@@ -65,7 +66,7 @@ def index():
 
         # Get all recipes in current week table
         week_recipes_ = session.query(Week).all()
-            
+
         week_recipes = []
 
         # No recipes in current week, so add three random ones
@@ -114,15 +115,27 @@ def index():
 def add():
 
     if request.method == 'POST':
+        response = google_images_download.googleimagesdownload()
 
         rf = request.form
 
-        new_recipe = Recipe(
-            title=['title'],
-            ingredients=rf['ingredients'],
-            instructions=rf['instructions'])
+        title = rf['title']
+        ingredients = str([x.rstrip() for x in rf['ingredients'].split('\n')])
+        instructions = str([x.rstrip() for x in rf['instructions'].split('\n')])
 
-        session.add(new_recipe)
+        arguments = {'keywords':title,'limit':1,'print_urls':True,'no_download':True, 'silent_mode':True}
+        image_url_ = response.download(arguments)[0][title]
+        while image_url_ == []:
+            image_url_ = response.download(arguments)[0][title]
+        image_url = image_url_[0]
+
+        recipe = Recipe(
+            title=title,
+            ingredients=ingredients,
+            instructions=instructions,
+            url=image_url)
+
+        session.add(recipe)
         session.commit()
 
         return redirect(url_for('index'))
@@ -133,8 +146,9 @@ def add():
 
 @app.route('/view')
 def view():
+    """ Page for viewing my recipes that I have added """
 
-    view_recipes_ = session.query(Recipe).all()
+    view_recipes_ = session.query(MyRecipes).all()
     recipe_list = []
 
     for v in view_recipes_:
@@ -155,9 +169,10 @@ def view():
     return render_template('view.html', app_data=app_data, recipe_list=recipe_list)
 
 
-@app.route('/b3')
-def b3():
-    return render_template('b3.html', app_data=app_data)
+@app.route('/favorite')
+def favorite():
+    """ Page for viewing my favorite recipes """
+    return render_template('favorite.html', app_data=app_data)
 
 
 # ------- DEVELOPMENT CONFIG -------

@@ -35,6 +35,20 @@ class Week(Base):
     url = Column(String(512), nullable=True)
 
 
+class MyRecipes(Base):
+    """ Table for recipes for the current week """
+
+    __tablename__ = 'my_recipes'
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(256), nullable=False)
+    ingredients = Column(String(256), nullable=False)
+    instructions = Column(String(256), nullable=False)
+    start_date = Column(Date, nullable=False)
+    rating = Column(Integer, nullable=True)
+    url = Column(String(512), nullable=True)
+
+
 class Favorite(Base):
     """ Table for recipes for the current week """
 

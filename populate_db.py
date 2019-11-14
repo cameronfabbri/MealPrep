@@ -6,7 +6,7 @@ and populate our database
 
 """
 
-
+from google_images_download import google_images_download
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db_setup import Base, Recipe
@@ -47,7 +47,10 @@ if __name__ == '__main__':
         recipe_url_dict[str(recipe_id)] = urls[0]
 
     i = 0
-    for recipe in tqdm(recipes):
+    response = google_images_download.googleimagesdownload()
+
+    #for recipe in tqdm(recipes):
+    for recipe in recipes:
 
         # Get data
         rid          = str(recipe['id'])
@@ -61,14 +64,27 @@ if __name__ == '__main__':
         instructions = ast.literal_eval(instructions)
         instructions = str([x['text'] for x in instructions])
 
-        if recipe_url_dict.get(rid) is None: continue
+        # Strip out ' and " from title
+        title = title.replace(',','').replace('.','').replace("'","").replace('"','').rstrip().strip()
+        title = ' '.join(title.split())
+
+        if recipe_url_dict.get(rid) is None:
+            arguments = {'keywords':title,'limit':1,'print_urls':True,'no_download':True, 'silent_mode':True}
+            image_url_ = response.download(arguments)[0][title]
+
+            while image_url_ == []:
+                image_url_ = response.download(arguments)[0][title]
+
+            image_url = image_url_[0]
+        else:
+            image_url = recipe_url_dict.get(rid)
 
         recipe = Recipe(
             rid=rid,
             title=title,
             ingredients=ingredients,
             instructions=instructions,
-            url=recipe_url_dict.get(rid))
+            url=image_url)
 
         session.add(recipe)
         session.commit()
