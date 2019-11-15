@@ -44,7 +44,7 @@ class MyRecipes(Base):
     title = Column(String(256), nullable=False)
     ingredients = Column(String(256), nullable=False)
     instructions = Column(String(256), nullable=False)
-    start_date = Column(Date, nullable=False)
+    start_date = Column(Date, nullable=True)
     rating = Column(Integer, nullable=True)
     url = Column(String(512), nullable=True)
 

@@ -2,8 +2,67 @@
 
 {% block body %}
 
+    <style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .column{
+        float: left;
+        width: 33.33%;
+        padding: 10px;
+        height: 1600px;
+    }
+    
+    .column2{
+        float: left;
+        width: 33.33%;
+        padding: 10px;
+        height: 400px;
+    }
+
+    .column3{
+        float: left;
+        width: 33.33%;
+        padding: 10px;
+        height: 500;
+    }
+
+    .row:after{
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    </style>
+
 {% for recipe in recipe_list %}
-    {{ recipe['title'] }}
+
+    <h2>{{ recipe['title'] }}</h2>
+
+    <div class="row">
+    
+        <div class="column3" style="background-color:#aaa;">
+            <img src=" {{ recipe['url'] }} " height="300px" width="300px">
+        </div>
+
+        <div class="column3" style="background-color:#aaa;">
+            <h2> Ingredients </h2><br>
+            {% for ingredient in recipe['ingredients'] %}
+                {{ ingredient }}<br>
+            {% endfor %}
+        </div>
+
+        <div class="column3" style="background-color:#aaa;">
+            <h2> Instructions </h2><br>
+            {% for instruction in recipe['instructions'] %}
+                {{ instruction }}<br>
+            {% endfor %}
+        </div>
+
+    </div>
+
     <hr>
 {% endfor %}
 

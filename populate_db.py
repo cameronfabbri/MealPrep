@@ -47,10 +47,8 @@ if __name__ == '__main__':
         recipe_url_dict[str(recipe_id)] = urls[0]
 
     i = 0
-    response = google_images_download.googleimagesdownload()
 
-    #for recipe in tqdm(recipes):
-    for recipe in recipes:
+    for recipe in tqdm(recipes):
 
         # Get data
         rid          = str(recipe['id'])
@@ -65,29 +63,20 @@ if __name__ == '__main__':
         instructions = str([x['text'] for x in instructions])
 
         # Strip out ' and " from title
-        title = title.replace(',','').replace('.','').replace("'","").replace('"','').rstrip().strip()
-        title = ' '.join(title.split())
-
-        if recipe_url_dict.get(rid) is None:
-            arguments = {'keywords':title,'limit':1,'print_urls':True,'no_download':True, 'silent_mode':True}
-            image_url_ = response.download(arguments)[0][title]
-
-            while image_url_ == []:
-                image_url_ = response.download(arguments)[0][title]
-
-            image_url = image_url_[0]
-        else:
-            image_url = recipe_url_dict.get(rid)
+        new_title = title.replace(',','').replace('.','').replace("'","").replace('"','').rstrip().strip()
+        new_title = ' '.join(new_title.split())
 
         recipe = Recipe(
             rid=rid,
-            title=title,
+            title=new_title,
             ingredients=ingredients,
             instructions=instructions,
-            url=image_url)
+            url=recipe_url_dict.get(rid))
 
         session.add(recipe)
-        session.commit()
 
-        #i += 1
-        #if i > 100: exit()
+        if i % 100 == 0:
+            session.commit()
+
+        i += 1
+        #if i > 1000: exit()

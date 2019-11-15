@@ -13,6 +13,9 @@ import datetime
 import random
 import ast
 
+import ops
+
+
 app_data = {
     "name":         "Meal Prep Web App",
     "description":  "A basic MealPrep Flask app",
@@ -85,6 +88,11 @@ def index():
                 recipe['ingredients'] = ast.literal_eval(recipe_.ingredients)
                 recipe['instructions'] = ast.literal_eval(recipe_.instructions)
 
+                # If no url for the recipe, find one
+                if recipe['url'] is None:
+                    print('No recipe')
+                    recipe['url'] = ops.get_image_url([recipe['title']])
+
                 week_recipes.append(recipe)
 
                 # Add to weekly recipe table
@@ -103,6 +111,12 @@ def index():
                 recipe = {}
                 recipe['title'] = recipe_.title
                 recipe['url'] = recipe_.url
+                
+                # If no url for the recipe, find one
+                if recipe['url'] is None:
+                    print('No recipe')
+                    recipe['url'] = ops.get_image_url([recipe['title']])
+
                 recipe['ingredients'] = ast.literal_eval(recipe_.ingredients)
                 recipe['instructions'] = ast.literal_eval(recipe_.instructions)
                 week_recipes.append(recipe)
@@ -129,8 +143,9 @@ def add():
             image_url_ = response.download(arguments)[0][title]
         image_url = image_url_[0]
 
-        recipe = Recipe(
+        recipe = MyRecipes(
             title=title,
+            start_date=d,
             ingredients=ingredients,
             instructions=instructions,
             url=image_url)
@@ -154,17 +169,22 @@ def view():
     for v in view_recipes_:
 
         v_ingredients = ast.literal_eval(v.ingredients)
+        v_instructions = ast.literal_eval(v.instructions)
 
         ingredients = []
+        instructions = []
         for ingredient in v_ingredients:
-            ingredients.append(ingredient['text'])
+            ingredients.append(ingredient)
+        for instruction in v_instructions:
+            instructions.append(instruction)
 
         view_recipes = {}
         view_recipes['title'] = v.title
         view_recipes['ingredients'] = ingredients
-        recipe_list.append(view_recipes)
+        view_recipes['instructions'] = instructions
+        view_recipes['url'] = v.url
 
-    print(recipe_list)
+        recipe_list.append(view_recipes)
 
     return render_template('view.html', app_data=app_data, recipe_list=recipe_list)
 
