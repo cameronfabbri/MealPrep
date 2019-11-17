@@ -66,10 +66,12 @@
                 <input type="hidden" name="meal"  value="1"/>
                 <button type="submit">New Recipe</button>
             </form><br>
+            <!--
             <form id="r_form" action="#" method="post">
                 <input type="hidden" name="meal"  value="1"/>
                 <button type="submit">Favorite Recipe</button>
             </form><br>
+            -->
             <p>
                 <b> Title: {{ recipes[0]['title'] }} </b><br><br>
                 <b> Ingredients: {% for ing in recipes[0]['ingredients'] %} </b><br>

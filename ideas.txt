@@ -4,6 +4,7 @@ the same ingredients can carry over from one meal to another
 Active learning for displaying suggested weekly meals
 
 Options:
+    - pick which meal was my favorite
     - seach for recipes
     - filter by recipes
     - get a new picture from google_images_download
