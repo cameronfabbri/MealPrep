@@ -12,6 +12,8 @@ class Recipe(Base):
     __tablename__ = 'recipes'
 
     id = Column(Integer, primary_key=True)
+
+    # This is a string because in the json file it's a string
     rid = Column(String(256), primary_key=False)
     title = Column(String(256), nullable=False)
     ingredients = Column(String(256), nullable=False)
@@ -41,6 +43,7 @@ class MyRecipes(Base):
     __tablename__ = 'my_recipes'
 
     id = Column(Integer, primary_key=True)
+    rid = Column(Integer, primary_key=False)
     title = Column(String(256), nullable=False)
     ingredients = Column(String(256), nullable=False)
     instructions = Column(String(256), nullable=False)

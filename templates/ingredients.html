@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+
+
+{% block body %}
+<font color="white">
+<h2> Weekly Ingredients </h2><br>
+{% for ingredient in ingredients%}
+    {{ ingredient }} <br>
+{% endfor %}
+</font>
+<br><br><br>
+{% endblock %}

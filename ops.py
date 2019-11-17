@@ -2,6 +2,8 @@ from google_images_download import google_images_download
 
 def get_image_url(keywords):
 
+    print('\n\nDOWNLOADING URL\n\n')
+
     keywords = ','.join(keywords)
 
     response  = google_images_download.googleimagesdownload()

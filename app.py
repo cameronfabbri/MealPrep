@@ -29,14 +29,10 @@ app_data = {
 d = datetime.date.today()
 _, week_num, _ = d.isocalendar()
 
-
-#engine = create_engine('sqlite:///recipes.db')
 from db_setup import engine
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
-#session_factory = sessionmaker(bind=engine)
-#session = scoped_session(session_factory)
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -50,7 +46,6 @@ def index():
         # Get new random recipe
         num = session.query(Recipe).count()
         new_rid = random.randint(1, num)
-
         new_recipe = session.query(Recipe).get(new_rid)
 
         # Update Week with new recipe
@@ -72,7 +67,7 @@ def index():
 
         week_recipes = []
 
-        # No recipes in current week, so add three random ones
+        # No recipes in current week, so add three random ones - this is only when we make a new db
         if week_recipes_ == []:
 
             num = session.query(Recipe).count()
@@ -90,7 +85,6 @@ def index():
 
                 # If no url for the recipe, find one
                 if recipe['url'] is None:
-                    print('No recipe')
                     recipe['url'] = ops.get_image_url([recipe['title']])
 
                 week_recipes.append(recipe)
@@ -106,23 +100,40 @@ def index():
                 session.add(w_r)
                 session.commit()
 
-        else:
-            for recipe_ in week_recipes_:
-                recipe = {}
-                recipe['title'] = recipe_.title
-                recipe['url'] = recipe_.url
-                
-                # If no url for the recipe, find one
-                if recipe['url'] is None:
-                    print('No recipe')
-                    recipe['url'] = ops.get_image_url([recipe['title']])
+        for recipe_ in week_recipes_:
+            recipe = {}
+            recipe['title'] = recipe_.title
+            recipe['url'] = recipe_.url
 
-                recipe['ingredients'] = ast.literal_eval(recipe_.ingredients)
-                recipe['instructions'] = ast.literal_eval(recipe_.instructions)
-                week_recipes.append(recipe)
+            # If no url for the recipe, find one
+            if recipe['url'] is None:
+                recipe['url'] = ops.get_image_url([recipe['title']])
+                edited_recipe = session.query(Week).filter_by(id=recipe_.id).one()
+                edited_recipe.url = recipe['url']
+                session.commit()
+
+
+            recipe['ingredients'] = ast.literal_eval(recipe_.ingredients)
+            recipe['instructions'] = ast.literal_eval(recipe_.instructions)
+            week_recipes.append(recipe)
 
 
     return render_template('index.html', app_data=app_data, recipes=week_recipes)
+
+@app.route('/ingredients', methods=['GET','POST'])
+def ingredients():
+    """ Shows the ingredients for the current meals of the week """
+
+    week_recipes = session.query(Week).all()
+    
+    ingredients = []
+
+    for wr in week_recipes:
+        wr_ingredients = ast.literal_eval(wr.ingredients)
+        for ing in wr_ingredients:
+            ingredients.append(ing)
+
+    return render_template('ingredients.html', ingredients=ingredients, app_data=app_data)
 
 
 @app.route('/add', methods=['GET','POST'])
@@ -159,9 +170,26 @@ def add():
         return render_template('add.html', app_data=app_data)
 
 
-@app.route('/view')
+@app.route('/view', methods=['GET','POST'])
 def view():
     """ Page for viewing my recipes that I have added """
+
+    if request.method == 'POST':
+        
+        old_recipe = session.query(Week).filter_by(id=request.form['old_id']).one()
+        new_recipe = session.query(MyRecipes).filter_by(id=request.form['new_id']).one()
+
+        # Update old recipe in the week table with our new one
+        old_recipe.title = new_recipe.title
+        old_recipe.rid = new_recipe.rid
+        old_recipe.url = new_recipe.url
+        old_recipe.ingredients = new_recipe.ingredients
+        old_recipe.instructions = new_recipe.instructions
+
+        session.add(old_recipe)
+        session.commit()
+
+        return redirect(url_for('index'))
 
     view_recipes_ = session.query(MyRecipes).all()
     recipe_list = []
@@ -183,6 +211,7 @@ def view():
         view_recipes['ingredients'] = ingredients
         view_recipes['instructions'] = instructions
         view_recipes['url'] = v.url
+        view_recipes['id'] = v.id
 
         recipe_list.append(view_recipes)
 
@@ -195,6 +224,5 @@ def favorite():
     return render_template('favorite.html', app_data=app_data)
 
 
-# ------- DEVELOPMENT CONFIG -------
 if __name__ == '__main__':
     app.run(debug=True)

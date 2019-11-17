@@ -1,6 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block body %}
+    <font color="white">
 
     <h2>{{ app_data['html_title'] }}</h2>
 
@@ -43,24 +44,24 @@
     <br>
 
     <div class="row">
-        <div class="column2" style="background-color:#aaa;">
+        <div class="column2" style="background-color:#606060;">
             <h2> <center> Meal 1 </center> </h2><br>
             <center><img src="{{recipes[0]['url']}}" style="width:256px;height:256px"></center>
         </div>
 
-        <div class="column2" style="background-color:#aaa;">
+        <div class="column2" style="background-color:#606060;">
             <h2> <center> Meal 2 </center> </h2><br>
             <center><img src="{{recipes[1]['url']}}" style="width:256px;height:256px"></center>
         </div>
 
-        <div class="column2" style="background-color:#aaa;">
+        <div class="column2" style="background-color:#606060;">
             <h2> <center> Meal 3 </center> </h2><br>
             <center><img src="{{recipes[2]['url']}}" style="width:256px;height:256px"></center>
         </div>
     </div>
 
     <div class="row">
-        <div class="column" style="background-color:#aaa;">
+        <div class="column" style="background-color:#606060;">
             <form id="r_form" action="#" method="post">
                 <input type="hidden" name="meal"  value="1"/>
                 <button type="submit">New Recipe</button>
@@ -79,7 +80,7 @@
                 {% endfor %}<br>
             </p>
         </div>
-        <div class="column" style="background-color:#aaa;">
+        <div class="column" style="background-color:#606060;">
             <form id="r_form" action="#" method="post">
                 <input type="hidden" name="meal"  value="2"/>
                 <button type="submit">New Recipe</button>
@@ -94,7 +95,7 @@
                 {% endfor %}<br>
             </p>
         </div>
-        <div class="column" style="background-color:#aaa;">
+        <div class="column" style="background-color:#606060;">
             <form id="r_form" action="#" method="post">
                 <input type="hidden" name="meal"  value="3"/>
                 <button type="submit">New Recipe</button>
@@ -110,7 +111,7 @@
             </p>
         </div>
     </div>
-
+    </font>
 
 
 

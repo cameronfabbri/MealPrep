@@ -75,8 +75,8 @@ if __name__ == '__main__':
 
         session.add(recipe)
 
-        if i % 100 == 0:
+        if i % 1000 == 0:
             session.commit()
-
         i += 1
-        #if i > 1000: exit()
+
+    session.commit()
