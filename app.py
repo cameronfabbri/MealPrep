@@ -30,9 +30,11 @@ d = datetime.date.today()
 _, week_num, _ = d.isocalendar()
 
 from db_setup import engine
+
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -225,4 +227,4 @@ def favorite():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)
