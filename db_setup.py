@@ -66,7 +66,11 @@ class Favorite(Base):
     rating = Column(Integer, nullable=True)
     url = Column(String(512), nullable=True)
 
-engine = create_engine('sqlite:///recipes.db')
+
+
+connect_args = {'check_same_thread':False}
+engine = create_engine('sqlite:///recipes.db', connect_args=connect_args)
+
 
 # Create classes above in database
 Base.metadata.create_all(engine)

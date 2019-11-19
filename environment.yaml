@@ -16,7 +16,6 @@ dependencies:
 - pip:
   - tqdm
   - fasttext
-  - coverage
   - coveralls
   - codecov
   - pytest
