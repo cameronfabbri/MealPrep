@@ -6,7 +6,7 @@ from google_images_download import google_images_download
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import scoped_session
-from db_setup import Base, Recipe, Week, Favorite, MyRecipes
+from db_setup import Base, Recipe, Week, Favorite, MyRecipes, Pantry
 
 import numpy as np
 import datetime
@@ -127,7 +127,7 @@ def ingredients():
     """ Shows the ingredients for the current meals of the week """
 
     week_recipes = session.query(Week).all()
-    
+
     ingredients = []
 
     for wr in week_recipes:
@@ -171,13 +171,53 @@ def add():
     else:
         return render_template('add.html', app_data=app_data)
 
+@app.route('/pantry', methods=['GET','POST'])
+def pantry():
+    """ Inventory of my pantry """
+
+    if request.method == 'POST':
+
+        rf = request.form
+
+        name = rf['name']
+        amount = rf['amount']
+        buy_date = rf['buy_date']
+        expire_date = rf['expire_date']
+
+        buy_date = datetime.datetime.strptime(buy_date, '%Y-%m-%d')
+        expire_date = datetime.datetime.strptime(expire_date, '%Y-%m-%d')
+
+        pantry_entry = Pantry(
+                name=name,
+                amount=amount,
+                buy_date=buy_date,
+                expire_date=expire_date)
+
+        session.add(pantry_entry)
+        session.commit()
+
+    pantry_items = session.query(Pantry).all()
+
+    pantry_list = []
+    for pitem in pantry_items:
+
+        pantry_obj = {
+                'name':pitem.name,
+                'amount':pitem.amount,
+                'buy_date':pitem.buy_date,
+                'expire_date':pitem.expire_date
+        }
+
+        pantry_list.append(pantry_obj)
+
+    return render_template('pantry.html', app_data=app_data, pantry_list=pantry_list)
 
 @app.route('/view', methods=['GET','POST'])
 def view():
     """ Page for viewing my recipes that I have added """
 
     if request.method == 'POST':
-        
+
         old_recipe = session.query(Week).filter_by(id=request.form['old_id']).one()
         new_recipe = session.query(MyRecipes).filter_by(id=request.form['new_id']).one()
 

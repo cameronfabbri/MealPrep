@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    <font color="white">
+
+    <h1> Add Pantry Items </h1>
+
+    <form id="r_form" action="#" method="post">
+        <div class="form-group">
+            Name: <input type="text" name="name"/><br>
+            Amount: <input type="text" name="amount"/><br>
+            Buy Date: <input type="date" name="buy_date"/><br>
+            Expire Date: <input type="date" name="expire_date"/><br>
+            <button type="submit">Add</button>
+        </div>
+    </form>
+
+    {% for item in pantry_list %}
+
+        {{ item['name'] }}
+
+    {% endfor %}
+    
+    </font>
+
+{% endblock %}

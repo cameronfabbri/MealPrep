@@ -1,8 +1,7 @@
 """
 
-Script to be run (probably) outside of Flask.
-This will take the json files containing recipes
-and populate our database
+Script to populate the recipes database
+This will take the json files containing recipes and populate our database
 
 """
 

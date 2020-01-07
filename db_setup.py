@@ -67,6 +67,17 @@ class Favorite(Base):
     url = Column(String(512), nullable=True)
 
 
+class Pantry(Base):
+    """ Table for my pantry inventory """
+
+    __tablename__ = 'pantry'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(256), nullable=False)
+    amount = Column(String(256), nullable=False)
+    buy_date = Column(Date, nullable=False)
+    expire_date = Column(Date, nullable=False)
+
 
 connect_args = {'check_same_thread':False}
 engine = create_engine('sqlite:///recipes.db', connect_args=connect_args)
