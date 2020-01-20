@@ -1,3 +1,13 @@
+"""
+
+Database tables setup.
+
+Recipes table is the 
+
+"""
+# Copyright (c) 2019.
+# Cameron Fabbri
+
 import sys
 from sqlalchemy import Column, ForeignKey, Integer, String, Date
 from sqlalchemy.ext.declarative import declarative_base
@@ -6,65 +16,43 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
-class Recipe(Base):
+class Recipes(Base):
     """ Table for all recipes """
 
     __tablename__ = 'recipes'
 
     id = Column(Integer, primary_key=True)
-
-    # This is a string because in the json file it's a string
-    rid = Column(String(256), primary_key=False)
     title = Column(String(256), nullable=False)
     ingredients = Column(String(256), nullable=False)
     instructions = Column(String(256), nullable=False)
+    rating = Column(Integer, nullable=True)
     date_made = Column(Date, nullable=True)
     url = Column(String(512), nullable=True)
+    source = Column(String(256), nullable=True)
 
 
 class Week(Base):
-    """ Table for recipes for the current week """
+    """ Table for recipe ids for the current week """
 
     __tablename__ = 'week'
 
     id = Column(Integer, primary_key=True)
-    rid = Column(String(256), primary_key=False)
-    title = Column(String(256), nullable=False)
-    ingredients = Column(String(256), nullable=False)
-    instructions = Column(String(256), nullable=False)
-    week_num = Column(Integer, nullable=False)
-    rating = Column(Integer, nullable=True)
-    url = Column(String(512), nullable=True)
 
 
 class MyRecipes(Base):
-    """ Table for recipes for the current week """
+    """ Table for my recipe ids """
 
     __tablename__ = 'my_recipes'
 
     id = Column(Integer, primary_key=True)
-    rid = Column(Integer, primary_key=False)
-    title = Column(String(256), nullable=False)
-    ingredients = Column(String(256), nullable=False)
-    instructions = Column(String(256), nullable=False)
-    start_date = Column(Date, nullable=True)
-    rating = Column(Integer, nullable=True)
-    url = Column(String(512), nullable=True)
 
 
-class Favorite(Base):
+class Favorites(Base):
     """ Table for recipes for the current week """
 
     __tablename__ = 'favorite'
 
     id = Column(Integer, primary_key=True)
-    rid = Column(String(256), primary_key=False)
-    title = Column(String(256), nullable=False)
-    ingredients = Column(String(256), nullable=False)
-    instructions = Column(String(256), nullable=False)
-    start_date = Column(Date, nullable=False)
-    rating = Column(Integer, nullable=True)
-    url = Column(String(512), nullable=True)
 
 
 class Pantry(Base):

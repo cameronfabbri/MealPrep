@@ -1,4 +1,12 @@
+"""
+
+"""
+# Copyright (c) 2019.
+# Cameron Fabbri
+
 from google_images_download import google_images_download
+
+
 
 def get_image_url(keywords):
 

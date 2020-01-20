@@ -4,11 +4,13 @@ Script to populate the recipes database
 This will take the json files containing recipes and populate our database
 
 """
+# Copyright (c) 2019.
+# Cameron Fabbri
 
 from google_images_download import google_images_download
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from db_setup import Base, Recipe
+from db_setup import Base, Recipes, Week
 from tqdm import tqdm
 import json
 import ast
@@ -45,12 +47,13 @@ if __name__ == '__main__':
 
         recipe_url_dict[str(recipe_id)] = urls[0]
 
-    i = 0
+    i = 1
+
+    week_count = 0
 
     for recipe in tqdm(recipes):
 
         # Get data
-        rid          = str(recipe['id'])
         title        = str(recipe['title'])
         ingredients  = str(recipe['ingredients'])
         instructions = str(recipe['instructions'])
@@ -65,17 +68,23 @@ if __name__ == '__main__':
         new_title = title.replace(',','').replace('.','').replace("'","").replace('"','').rstrip().strip()
         new_title = ' '.join(new_title.split())
 
-        recipe = Recipe(
-            rid=rid,
+        recipe = Recipes(
             title=new_title,
             ingredients=ingredients,
             instructions=instructions,
-            url=recipe_url_dict.get(rid))
+            url=recipe_url_dict.get(recipe['id']))
 
         session.add(recipe)
 
-        if i % 1000 == 0:
+        if week_count < 3:
+            week_recipe = Week(id=recipe.id)
+            session.add(week_recipe)
             session.commit()
+            week_count += 1
+
+        if i % 2000 == 0:
+            session.commit()
+            break
         i += 1
 
     session.commit()

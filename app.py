@@ -1,3 +1,9 @@
+"""
+
+"""
+# Copyright (c) 2019.
+# Cameron Fabbri
+
 from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
@@ -6,7 +12,7 @@ from google_images_download import google_images_download
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import scoped_session
-from db_setup import Base, Recipe, Week, Favorite, MyRecipes, Pantry
+from db_setup import Base, Recipes, Week, Favorites, MyRecipes, Pantry
 
 import numpy as np
 import datetime
@@ -36,26 +42,28 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
+def get_recipe_by_id(recipe_id):
+    return session.query(Recipes).get(recipe_id)
+
+
 @app.route('/', methods=['GET','POST'])
 def index():
 
+    # Getting a new random recipe
     if request.method == 'POST':
 
-        # Get old recipe from Week table
-        old_rid = int(request.form['meal'])
-        old_recipe = session.query(Week).get(old_rid)
+        # Get recipe id we want to swap out
+        old_id = int(request.form['recipe_id'].split('/')[0])
 
-        # Get new random recipe
-        num = session.query(Recipe).count()
-        new_rid = random.randint(1, num)
-        new_recipe = session.query(Recipe).get(new_rid)
+        # Old recipe object
+        old_recipe = session.query(Week).get(old_id)
 
-        # Update Week with new recipe
-        old_recipe.title = new_recipe.title
-        old_recipe.rid = new_recipe.rid
-        old_recipe.url = new_recipe.url
-        old_recipe.ingredients = new_recipe.ingredients
-        old_recipe.instructions = new_recipe.instructions
+        # Get new random recipe id
+        num = session.query(Recipes).count()
+        new_id = random.randint(1, num)
+
+        # Update Week with new recipe id
+        old_recipe.id = new_id
 
         session.add(old_recipe)
         session.commit()
@@ -65,60 +73,32 @@ def index():
     else:
 
         # Get all recipes in current week table
-        week_recipes_ = session.query(Week).all()
+        # This will just return 3 ids which we go to the main table for
+        week_rows = session.query(Week).all()
 
         week_recipes = []
 
-        # No recipes in current week, so add three random ones - this is only when we make a new db
-        if week_recipes_ == []:
+        # Loop through the week rows, find the 3 recipes, and return them
+        for row in week_rows:
 
-            num = session.query(Recipe).count()
-            rand_ids = [random.randint(1, num) for i in range(3)]
+            # Get recipe details from main table based on id
+            recipe_obj = get_recipe_by_id(row.id)
 
-            for r_id in rand_ids:
-
-                recipe_ = session.query(Recipe).get(r_id)
-
-                recipe = {}
-                recipe['title'] = recipe_.title
-                recipe['url'] = recipe_.url
-                recipe['ingredients'] = ast.literal_eval(recipe_.ingredients)
-                recipe['instructions'] = ast.literal_eval(recipe_.instructions)
-
-                # If no url for the recipe, find one
-                if recipe['url'] is None:
-                    recipe['url'] = ops.get_image_url([recipe['title']])
-
-                week_recipes.append(recipe)
-
-                # Add to weekly recipe table
-                w_r = Week(
-                    title=recipe_.title,
-                    ingredients=recipe_.ingredients,
-                    instructions=recipe_.instructions,
-                    week_num=week_num,
-                    url=recipe_.url)
-
-                session.add(w_r)
-                session.commit()
-
-        for recipe_ in week_recipes_:
             recipe = {}
-            recipe['title'] = recipe_.title
-            recipe['url'] = recipe_.url
+            recipe['title'] = recipe_obj.title
+            recipe['url'] = recipe_obj.url
+            recipe['id'] = recipe_obj.id
+            recipe['rating'] = recipe_obj.rating
 
-            # If no url for the recipe, find one
+            # If no image url for the recipe, find one
             if recipe['url'] is None:
                 recipe['url'] = ops.get_image_url([recipe['title']])
-                edited_recipe = session.query(Week).filter_by(id=recipe_.id).one()
-                edited_recipe.url = recipe['url']
+                recipe_obj.url = recipe['url']
                 session.commit()
 
-
-            recipe['ingredients'] = ast.literal_eval(recipe_.ingredients)
-            recipe['instructions'] = ast.literal_eval(recipe_.instructions)
+            recipe['ingredients'] = ast.literal_eval(recipe_obj.ingredients)
+            recipe['instructions'] = ast.literal_eval(recipe_obj.instructions)
             week_recipes.append(recipe)
-
 
     return render_template('index.html', app_data=app_data, recipes=week_recipes)
 
@@ -126,16 +106,17 @@ def index():
 def ingredients():
     """ Shows the ingredients for the current meals of the week """
 
-    week_recipes = session.query(Week).all()
+    week_rows = session.query(Week).all()
 
-    ingredients = []
+    week_ingredients = []
 
-    for wr in week_recipes:
-        wr_ingredients = ast.literal_eval(wr.ingredients)
-        for ing in wr_ingredients:
-            ingredients.append(ing)
+    for row in week_rows:
+        recipe_obj = get_recipe_by_id(row.id)
+        ingredients = ast.literal_eval(recipe_obj.ingredients)
+        for ing in ingredients:
+            week_ingredients.append(ing)
 
-    return render_template('ingredients.html', ingredients=ingredients, app_data=app_data)
+    return render_template('ingredients.html', ingredients=week_ingredients, app_data=app_data)
 
 
 @app.route('/add', methods=['GET','POST'])
@@ -258,6 +239,28 @@ def view():
         recipe_list.append(view_recipes)
 
     return render_template('view.html', app_data=app_data, recipe_list=recipe_list)
+
+
+@app.route('/delete', methods=['GET','POST'])
+def delete():
+
+    if request.method == 'POST':
+        print(request.form['id'])
+
+    return redirect(url_for('index'))
+
+
+@app.route('/search', methods=['GET','POST'])
+def search():
+    """ Page for searching for recipes """
+
+    if request.method == 'POST':
+
+        search_term = request.form['search']
+        print('Searching for', search_term)
+        recipes = session.query(Recipes).filter(Recipes.title.contains(search_term)).all()
+
+    return render_template('search.html', app_data=app_data, recipes=recipes, num_recipes=len(recipes))
 
 
 @app.route('/favorite')

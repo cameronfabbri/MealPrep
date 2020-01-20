@@ -43,75 +43,41 @@
     <div class="page-header"></div>
     <br>
 
-    <div class="row">
-        <div class="column2" style="background-color:#606060;">
-            <h2> <center> Meal 1 </center> </h2><br>
-            <center><img src="{{recipes[0]['url']}}" style="width:256px;height:256px"></center>
+        <div class="row">
+        {% for recipe in recipes %}
+
+            <div class="column2" style="background-color:#606060;">
+                <h2> <center> Meal </center> </h2>
+                <center><img src="{{recipe['url']}}" style="width:256px;height:256px"></center>
+            </div>
+        {% endfor %}
         </div>
 
-        <div class="column2" style="background-color:#606060;">
-            <h2> <center> Meal 2 </center> </h2><br>
-            <center><img src="{{recipes[1]['url']}}" style="width:256px;height:256px"></center>
+        <div class="row">
+        {% for recipe in recipes %}
+            <div class="column" style="background-color:#606060;">
+                <form id="r_form" action="#" method="post">
+                    <input type="hidden" name="recipe_id"  value={{ recipe['id'] }}/>
+                    <button type="submit">New Recipe</button>
+                </form><br>
+                <form id="d_form" action="/delete" method="post">
+                    <input type="hidden" name="id"  value={{ recipe['id'] }}/>
+                    <button type="submit">Delete Recipe</button>
+                </form><br>
+                <p>
+                    <b> ID: {{ recipe['id'] }} <br>
+                    <b> Title: {{ recipe['title'] }} </b><br><br>
+                    <b> Ingredients: {% for ing in recipe['ingredients'] %} </b><br>
+                        {{ ing }}
+                    {% endfor %}<br><br>
+                    <b> Instructions: {% for inst in recipe['instructions'] %} </b><br>
+                        {{ inst }}
+                    {% endfor %}<br>
+                </p>
+            </div>
+        {% endfor %}
         </div>
 
-        <div class="column2" style="background-color:#606060;">
-            <h2> <center> Meal 3 </center> </h2><br>
-            <center><img src="{{recipes[2]['url']}}" style="width:256px;height:256px"></center>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="column" style="background-color:#606060;">
-            <form id="r_form" action="#" method="post">
-                <input type="hidden" name="meal"  value="1"/>
-                <button type="submit">New Recipe</button>
-            </form><br>
-            <!--
-            <form id="r_form" action="#" method="post">
-                <input type="hidden" name="meal"  value="1"/>
-                <button type="submit">Favorite Recipe</button>
-            </form><br>
-            -->
-            <p>
-                <b> Title: {{ recipes[0]['title'] }} </b><br><br>
-                <b> Ingredients: {% for ing in recipes[0]['ingredients'] %} </b><br>
-                    {{ ing }}
-                {% endfor %}<br><br>
-                <b> Instructions: {% for inst in recipes[0]['instructions'] %} </b><br>
-                    {{ inst }}
-                {% endfor %}<br>
-            </p>
-        </div>
-        <div class="column" style="background-color:#606060;">
-            <form id="r_form" action="#" method="post">
-                <input type="hidden" name="meal"  value="2"/>
-                <button type="submit">New Recipe</button>
-            </form><br>
-            <p>
-                <b> Title: {{ recipes[1]['title'] }} </b><br><br>
-                <b> Ingredients: {% for ing in recipes[1]['ingredients'] %} </b><br>
-                    {{ ing }}
-                {% endfor %}<br><br>
-                <b> Instructions: {% for inst in recipes[1]['instructions'] %} </b><br>
-                    {{ inst }}
-                {% endfor %}<br>
-            </p>
-        </div>
-        <div class="column" style="background-color:#606060;">
-            <form id="r_form" action="#" method="post">
-                <input type="hidden" name="meal"  value="3"/>
-                <button type="submit">New Recipe</button>
-            </form><br>
-            <p>
-                <b> Title: {{ recipes[2]['title'] }} </b><br><br>
-                <b> Ingredients: {% for ing in recipes[2]['ingredients'] %} </b><br>
-                    {{ ing }}
-                {% endfor %}<br><br>
-                <b> Instructions: {% for inst in recipes[2]['instructions'] %} </b><br>
-                    {{ inst }}
-                {% endfor %}<br>
-            </p>
-        </div>
     </div>
     </font>
 
