@@ -76,6 +76,9 @@ def index():
         # This will just return 3 ids which we go to the main table for
         week_rows = session.query(Week).all()
 
+        # Slot numbers so they aren't re-ordered by db id
+        slots = [x.slot_num for x in week_rows]
+
         week_recipes = []
 
         # Loop through the week rows, find the 3 recipes, and return them
@@ -99,6 +102,9 @@ def index():
             recipe['ingredients'] = ast.literal_eval(recipe_obj.ingredients)
             recipe['instructions'] = ast.literal_eval(recipe_obj.instructions)
             week_recipes.append(recipe)
+
+    # Sort based on slot numbers
+    week_recipes = [x for _,x in sorted(zip(slots,week_recipes))]
 
     return render_template('index.html', app_data=app_data, recipes=week_recipes)
 
@@ -128,6 +134,7 @@ def add():
         rf = request.form
 
         title = rf['title']
+        source = rf['source']
         ingredients = str([x.rstrip() for x in rf['ingredients'].split('\n')])
         instructions = str([x.rstrip() for x in rf['instructions'].split('\n')])
 
@@ -137,14 +144,20 @@ def add():
             image_url_ = response.download(arguments)[0][title]
         image_url = image_url_[0]
 
-        recipe = MyRecipes(
+        recipe = Recipes(
             title=title,
-            start_date=d,
             ingredients=ingredients,
             instructions=instructions,
-            url=image_url)
+            url=image_url,
+            source=source)
 
         session.add(recipe)
+        session.flush()
+        session.commit()
+
+        # Looks like the id is right but it didn't add to MyRecipes
+        print('adding with id:',recipe.id)
+        my_recipe = MyRecipes(id=recipe.id)
         session.commit()
 
         return redirect(url_for('index'))
@@ -193,8 +206,8 @@ def pantry():
 
     return render_template('pantry.html', app_data=app_data, pantry_list=pantry_list)
 
-@app.route('/view', methods=['GET','POST'])
-def view():
+@app.route('/my_recipes', methods=['GET','POST'])
+def my_recipes():
     """ Page for viewing my recipes that I have added """
 
     if request.method == 'POST':
@@ -216,9 +229,9 @@ def view():
 
     view_recipes_ = session.query(MyRecipes).all()
     recipe_list = []
+    print('view_recipes_:',view_recipes_)
 
     for v in view_recipes_:
-
         v_ingredients = ast.literal_eval(v.ingredients)
         v_instructions = ast.literal_eval(v.instructions)
 
@@ -238,7 +251,7 @@ def view():
 
         recipe_list.append(view_recipes)
 
-    return render_template('view.html', app_data=app_data, recipe_list=recipe_list)
+    return render_template('my_recipes.html', app_data=app_data, recipe_list=recipe_list)
 
 
 @app.route('/delete', methods=['GET','POST'])

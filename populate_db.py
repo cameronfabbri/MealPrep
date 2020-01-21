@@ -24,11 +24,11 @@ if __name__ == '__main__':
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
 
-    #recipes_file = os.path.join('data','layers','recipes_small.json')
-    #images_file  = os.path.join('data','layers','images_small.json')
+    recipes_file = os.path.join('data','layers','recipes_small.json')
+    images_file  = os.path.join('data','layers','images_small.json')
 
-    recipes_file = os.path.join('data','layers','layer1.json')
-    images_file  = os.path.join('data','layers','layer2.json')
+    #recipes_file = os.path.join('data','layers','layer1.json')
+    #images_file  = os.path.join('data','layers','layer2.json')
 
     with open(recipes_file, 'r') as json_file:
         recipes = json.load(json_file)
@@ -50,7 +50,6 @@ if __name__ == '__main__':
     i = 1
 
     week_count = 0
-
     for recipe in tqdm(recipes):
 
         # Get data
@@ -77,7 +76,7 @@ if __name__ == '__main__':
         session.add(recipe)
 
         if week_count < 3:
-            week_recipe = Week(id=recipe.id)
+            week_recipe = Week(id=recipe.id, slot_num=week_count+1)
             session.add(week_recipe)
             session.commit()
             week_count += 1

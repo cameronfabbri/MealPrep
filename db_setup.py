@@ -2,7 +2,7 @@
 
 Database tables setup.
 
-Recipes table is the 
+Recipes table is the
 
 """
 # Copyright (c) 2019.
@@ -37,6 +37,7 @@ class Week(Base):
     __tablename__ = 'week'
 
     id = Column(Integer, primary_key=True)
+    slot_num = Column(Integer, primary_key=False)
 
 
 class MyRecipes(Base):
