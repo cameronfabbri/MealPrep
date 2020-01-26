@@ -59,11 +59,20 @@ def index():
         old_recipe = session.query(Week).get(old_id)
 
         # Get new random recipe id
-        num = session.query(Recipes).count()
-        new_id = random.randint(1, num)
+        #num = session.query(Recipes).count()
+        #new_id = random.randint(1, num)
 
         # Update Week with new recipe id
-        old_recipe.id = new_id
+        #old_recipe.id = new_id
+
+        #session.add(old_recipe)
+        #session.commit()
+        
+        # Get new random recipe from Recipes table
+        new_recipe = random.choice(session.query(Recipes).all())
+
+        # Update Week with new recipe
+        old_recipe.id = new_recipe.id
 
         session.add(old_recipe)
         session.commit()
@@ -79,7 +88,7 @@ def index():
         # Slot numbers so they aren't re-ordered by db id
         slots = [x.slot_num for x in week_rows]
 
-        week_recipes = []
+        week_recipes = [None, None, None]
 
         # Loop through the week rows, find the 3 recipes, and return them
         for row in week_rows:
@@ -92,6 +101,7 @@ def index():
             recipe['url'] = recipe_obj.url
             recipe['id'] = recipe_obj.id
             recipe['rating'] = recipe_obj.rating
+            recipe['slot_num'] = row.slot_num
 
             # If no image url for the recipe, find one
             if recipe['url'] is None:
@@ -101,12 +111,10 @@ def index():
 
             recipe['ingredients'] = ast.literal_eval(recipe_obj.ingredients)
             recipe['instructions'] = ast.literal_eval(recipe_obj.instructions)
-            week_recipes.append(recipe)
-
-    # Sort based on slot numbers
-    week_recipes = [x for _,x in sorted(zip(slots,week_recipes))]
+            week_recipes[row.slot_num-1] = recipe
 
     return render_template('index.html', app_data=app_data, recipes=week_recipes)
+
 
 @app.route('/ingredients', methods=['GET','POST'])
 def ingredients():
@@ -156,7 +164,6 @@ def add():
         session.commit()
 
         # Looks like the id is right but it didn't add to MyRecipes
-        print('adding with id:',recipe.id)
         my_recipe = MyRecipes(id=recipe.id)
         session.commit()
 
@@ -229,7 +236,6 @@ def my_recipes():
 
     view_recipes_ = session.query(MyRecipes).all()
     recipe_list = []
-    print('view_recipes_:',view_recipes_)
 
     for v in view_recipes_:
         v_ingredients = ast.literal_eval(v.ingredients)
@@ -258,7 +264,28 @@ def my_recipes():
 def delete():
 
     if request.method == 'POST':
-        print(request.form['id'])
+        del_id = int(request.form['recipe_id'].split('/')[0])
+
+        # Get recipe to delete from Week table - don't need to delete, just change id
+        del_recipe_w = session.query(Week).filter_by(id=del_id).one()
+
+        # Get new random recipe from Recipes table
+        new_recipe = random.choice(session.query(Recipes).all())
+
+        # Update Week with new recipe
+        del_recipe_w.id = new_recipe.id
+
+        session.add(del_recipe_w)
+        session.commit()
+
+        # Get recipe to delete from Recipes table
+        del_recipe_r = session.query(Recipes).filter_by(id=del_id).one()
+
+        # Delete recipe from Recipes table
+        session.delete(del_recipe_r)
+        session.commit()
+
+        
 
     return redirect(url_for('index'))
 
@@ -270,8 +297,10 @@ def search():
     if request.method == 'POST':
 
         search_term = request.form['search']
-        print('Searching for', search_term)
         recipes = session.query(Recipes).filter(Recipes.title.contains(search_term)).all()
+
+    else:
+        recipes = []
 
     return render_template('search.html', app_data=app_data, recipes=recipes, num_recipes=len(recipes))
 
