@@ -83,7 +83,7 @@ if __name__ == '__main__':
 
         if i % 2000 == 0:
             session.commit()
-            break
+            #break
         i += 1
 
     session.commit()
