@@ -1,0 +1,71 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">    
+    
+    <style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .column{
+        float: left;
+        width: 50%;
+        padding: 10px;
+        height: 1600px;
+    }
+    
+    .column2{
+        float: left;
+        width: 50%;
+        padding: 10px;
+        height: 1000px;
+    }
+
+    .row:after{
+        content: "";
+        display: table;
+        clear: both;
+    }
+    </style>
+
+    <font color="white">
+    
+    <p>
+
+    <div class="page-header"></div>
+    
+    <div class="row">
+
+        <div class="column2" style="background-color:#606060;">
+            <h2> {{ recipe['title'] }} </h2><br>
+            <img src="{{recipe['url']}}" style="width:384px;height:384px"><br>
+
+            <form id="r_form" action="#" method="post">
+                <div class="form-group">
+                    <input type="hidden" value="{{ recipe['id'] }}" name="favorite"/><br><br>
+                    <button class="btn" type="submit"><i class="fas fa-heart"></i>Favorite</button>
+                </div>
+            </form>
+
+        </div>
+
+        <div class="column2" style="background-color:#606060;">
+            <h3> Ingredients: </h3><br>
+            {% for ing in recipe['ingredients'] %}
+                {{ ing }}
+            {% endfor %}<br><br><br>
+
+            <h3> Instructions: </h3>
+            {% for ins in recipe['instructions'] %}
+                {{ ins }}
+            {% endfor %}<br><br>
+
+        </div>
+    </div>
+
+    </p>
+    </font>
+{% endblock %}

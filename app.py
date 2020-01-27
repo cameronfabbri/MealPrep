@@ -58,16 +58,6 @@ def index():
         # Old recipe object
         old_recipe = session.query(Week).get(old_id)
 
-        # Get new random recipe id
-        #num = session.query(Recipes).count()
-        #new_id = random.randint(1, num)
-
-        # Update Week with new recipe id
-        #old_recipe.id = new_id
-
-        #session.add(old_recipe)
-        #session.commit()
-        
         # Get new random recipe from Recipes table
         new_recipe = random.choice(session.query(Recipes).all())
 
@@ -285,7 +275,7 @@ def delete():
         session.delete(del_recipe_r)
         session.commit()
 
-        
+
 
     return redirect(url_for('index'))
 
@@ -295,7 +285,6 @@ def search():
     """ Page for searching for recipes """
 
     if request.method == 'POST':
-
         search_term = request.form['search']
         recipes = session.query(Recipes).filter(Recipes.title.contains(search_term)).all()
 
@@ -303,6 +292,30 @@ def search():
         recipes = []
 
     return render_template('search.html', app_data=app_data, recipes=recipes, num_recipes=len(recipes))
+
+
+@app.route('/view')
+def view():
+    """ Page for viewing my favorite recipes """
+
+    recipe_obj = session.query(Recipes).get(request.args.get('id'))
+
+    recipe = {}
+    recipe['title'] = recipe_obj.title
+    recipe['url'] = recipe_obj.url
+    recipe['id'] = recipe_obj.id
+    recipe['rating'] = recipe_obj.rating
+
+    # If no image url for the recipe, find one
+    if recipe['url'] is None:
+        recipe['url'] = ops.get_image_url([recipe['title']])
+        recipe_obj.url = recipe['url']
+        session.commit()
+
+    recipe['ingredients'] = ast.literal_eval(recipe_obj.ingredients)
+    recipe['instructions'] = ast.literal_eval(recipe_obj.instructions)
+
+    return render_template('view.html', app_data=app_data, recipe=recipe)
 
 
 @app.route('/favorite')

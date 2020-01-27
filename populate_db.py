@@ -24,11 +24,11 @@ if __name__ == '__main__':
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
 
-    #recipes_file = os.path.join('data','layers','recipes_small.json')
-    #images_file  = os.path.join('data','layers','images_small.json')
+    recipes_file = os.path.join('data','layers','recipes_small.json')
+    images_file  = os.path.join('data','layers','images_small.json')
 
-    recipes_file = os.path.join('data','layers','layer1.json')
-    images_file  = os.path.join('data','layers','layer2.json')
+    #recipes_file = os.path.join('data','layers','layer1.json')
+    #images_file  = os.path.join('data','layers','layer2.json')
 
     with open(recipes_file, 'r') as json_file:
         recipes = json.load(json_file)
