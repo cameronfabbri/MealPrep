@@ -87,7 +87,7 @@
 <h3>Found {{ num_recipes }} recipes<br><hr></h3>
 {% for recipe in recipes %}
 
-    {{ recipe.title }}<br>
+    <b> <a href="view?id={{ recipe['id'] }}">{{ recipe['title'] }}</a> </b><br>
 
 {% endfor %}
 

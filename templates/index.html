@@ -11,6 +11,9 @@
         box-sizing: border-box;
     }
 
+    a {
+        color: white;
+    }
     .column{
         float: left;
         width: 33.33%;
@@ -65,8 +68,7 @@
                     <button type="submit">Delete Recipe</button>
                 </form><br>
                 <p>
-                    <b> ID: {{ recipe['id'] }} <br>
-                    <b> Title: {{ recipe['title'] }} </b><br><br>
+                    <b> <a href="view?id={{ recipe['id'] }}">{{ recipe['title'] }}</a> </b><br><br>
                     <b> Ingredients: {% for ing in recipe['ingredients'] %} </b><br>
                         {{ ing }}
                     {% endfor %}<br><br>

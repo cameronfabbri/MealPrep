@@ -254,28 +254,39 @@ def my_recipes():
 def delete():
 
     if request.method == 'POST':
+
         del_id = int(request.form['recipe_id'].split('/')[0])
 
-        # Get recipe to delete from Week table - don't need to delete, just change id
-        del_recipe_w = session.query(Week).filter_by(id=del_id).one()
+        # TODO - change this to `if id in week_ids`
+        # Delete from week if in week
+        try:
+            # Get recipe to delete from Week table - don't need to delete, just change id
+            del_recipe_w = session.query(Week).filter_by(id=del_id).one()
 
-        # Get new random recipe from Recipes table
-        new_recipe = random.choice(session.query(Recipes).all())
+            # Get new random recipe from Recipes table
+            new_recipe = random.choice(session.query(Recipes).all())
 
-        # Update Week with new recipe
-        del_recipe_w.id = new_recipe.id
+            # Update Week with new recipe
+            del_recipe_w.id = new_recipe.id
 
-        session.add(del_recipe_w)
-        session.commit()
+            session.add(del_recipe_w)
+            session.commit()
 
-        # Get recipe to delete from Recipes table
-        del_recipe_r = session.query(Recipes).filter_by(id=del_id).one()
+            # Get recipe to delete from Recipes table
+            del_recipe_r = session.query(Recipes).filter_by(id=del_id).one()
 
-        # Delete recipe from Recipes table
-        session.delete(del_recipe_r)
-        session.commit()
+            # Delete recipe from Recipes table
+            session.delete(del_recipe_r)
+            session.commit()
 
+        except:
 
+            # Get recipe to delete from Recipes table
+            del_recipe_r = session.query(Recipes).filter_by(id=del_id).one()
+
+            # Delete recipe from Recipes table
+            session.delete(del_recipe_r)
+            session.commit()
 
     return redirect(url_for('index'))
 
