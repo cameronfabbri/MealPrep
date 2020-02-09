@@ -7,7 +7,7 @@ This will take the json files containing recipes and populate our database
 # Copyright (c) 2019.
 # Cameron Fabbri
 
-from google_images_download import google_images_download
+from BingImages import BingImages
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from db_setup import Base, Recipes, Week
@@ -24,11 +24,11 @@ if __name__ == '__main__':
     DBSession = sessionmaker(bind=engine)
     session = DBSession()
 
-    recipes_file = os.path.join('data','layers','recipes_small.json')
-    images_file  = os.path.join('data','layers','images_small.json')
+    #recipes_file = os.path.join('data','layers','recipes_small.json')
+    #images_file  = os.path.join('data','layers','images_small.json')
 
-    #recipes_file = os.path.join('data','layers','layer1.json')
-    #images_file  = os.path.join('data','layers','layer2.json')
+    recipes_file = os.path.join('data','layers','layer1.json')
+    images_file  = os.path.join('data','layers','layer2.json')
 
     with open(recipes_file, 'r') as json_file:
         recipes = json.load(json_file)
@@ -67,11 +67,19 @@ if __name__ == '__main__':
         new_title = title.replace(',','').replace('.','').replace("'","").replace('"','').rstrip().strip()
         new_title = ' '.join(new_title.split())
 
+        url = recipe_url_dict.get(recipe['id'])
+
+        if url is None:
+            try:
+                url = BingImages(title, count=1).get()[0]
+            except:
+                url = None
+
         recipe = Recipes(
             title=new_title,
             ingredients=ingredients,
             instructions=instructions,
-            url=recipe_url_dict.get(recipe['id']))
+            url=url)#recipe_url_dict.get(recipe['id']))
 
         session.add(recipe)
 
