@@ -23,7 +23,7 @@ class MyHTMLParser(HTMLParser):
         self.data = data
 
 
-if __name__ == '__main__':
+def main():
 
     engine = create_engine('sqlite:///recipes.db')
     Base.metadata.bind = engine
@@ -45,7 +45,10 @@ if __name__ == '__main__':
 
     recipe_dict = {}
 
-    for lc, line in enumerate(lines):
+    week_count = 0
+
+    lc = 0
+    for line in tqdm(lines):
 
         if 'recipe_rt' in line:
             in_recipe = True
@@ -81,9 +84,9 @@ if __name__ == '__main__':
             in_recipe = False
 
             recipe = Recipes(
-                title=new_title,
-                ingredients=ingredients,
-                instructions=instructions,
+                title=recipe_title,
+                ingredients=str(ingredients),
+                instructions=str(instructions),
                 url=url)
 
             session.add(recipe)
@@ -94,7 +97,9 @@ if __name__ == '__main__':
                 session.commit()
                 week_count += 1
 
-            if i % 10 == 0:
-                session.commit()
-                break
+        lc += 1
 
+    session.commit()
+
+if __name__ == '__main__':
+    main()
