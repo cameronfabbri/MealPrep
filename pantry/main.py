@@ -23,9 +23,12 @@ def main():
         for im in images:
             data_dict[im] = i
 
-
     train_len = len(list(data_dict.keys()))
     all_paths = np.asarray(list(data_dict.keys()))
+
+    print('\n')
+    print(num_classes,'classes')
+    print(train_len,'data points\n')
 
     base_model = tf.keras.applications.VGG19(include_top=False, weights='imagenet')
     base_model.trainable = False
@@ -67,6 +70,7 @@ def main():
 
             img = tf.image.random_flip_left_right(img)
             img = tf.image.random_flip_up_down(img)
+            #img = tf.image.random_jpeg_quality(img, 50, 100)
 
             img = tf.image.resize(img, (224, 224))
             img = tf.keras.applications.vgg19.preprocess_input(img)
@@ -83,7 +87,7 @@ def main():
    
         return batch_images, batch_labels
 
-    for step in range(1000):
+    for step in range(10000):
 
         idx = np.random.choice(np.arange(train_len), 8, replace=False)
 
